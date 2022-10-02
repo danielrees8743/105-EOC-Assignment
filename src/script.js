@@ -19,23 +19,17 @@ const getDatabaseData = async (gid) => {
 };
 
 let tableData = [];
-
 //* Get all table data
 const getAllDatabaseData = async (gid) => {
   try {
-    let names = await getDatabaseData(gid[0]);
-    tableData.names = names;
-    let hire = await getDatabaseData(gid[1]);
-    tableData.hire = hire;
-    let salary = await getDatabaseData(gid[2]);
-    tableData.salary = salary;
-
+    tableData.names = await getDatabaseData(gid[0]);
+    tableData.hire = await getDatabaseData(gid[1]);
+    tableData.salary = await getDatabaseData(gid[2]);
     createTable(tableData);
   } catch (error) {
     console.log(error);
   }
 };
-
 //* Create table
 const labelForTable = {
   last: [],
@@ -65,7 +59,7 @@ const createTable = (tableData) => {
 
   //- Create table head
   let table = $('#employees');
-  table.addClass('table table-striped').bootstrapTable({
+  table.addClass('table table-striped table-dark').bootstrapTable({
     columns: [
       {
         field: 'last',
@@ -78,9 +72,8 @@ const createTable = (tableData) => {
           }
           if (a > b) {
             return 1;
-          } else {
-            return -1;
           }
+          return -1;
         },
       },
       {
@@ -130,9 +123,7 @@ const createTable = (tableData) => {
   };
 
   tableData.names.table.rows.map((row, index) => {
-    if (row.c[1].v === 'last') {
-      return data.last;
-    }
+    if (row.c[1].v === 'last') return data.last;
     data.last.push(row.c[1].v);
     data.first.push(row.c[0].v);
   });
