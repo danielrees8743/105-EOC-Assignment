@@ -9,7 +9,6 @@ const gids = ['0', '1574569648', '1605451198'];
 const getDatabaseData = async (gid) => {
   try {
     const response = await fetch(`${dataURLBase}${id}${dataURLEnd}${gid}`);
-
     let data = await response.text();
     data = data.substring(47, data.length - 2);
     data = JSON.parse(data);
@@ -45,10 +44,9 @@ const labelForTable = {
   hire: [],
   date: [],
 };
-console.log(tableData);
-const createTable = (tableData) => {
-  //- Get labels for the table
 
+//- Get labels for the table
+const createTable = (tableData) => {
   labelForTable.first = tableData.names.table.rows[0].c[0].v.replace(
     'first',
     'First'
@@ -57,7 +55,6 @@ const createTable = (tableData) => {
     'last',
     'Last'
   );
-
   labelForTable.salary = tableData.salary.table.cols[0].label.replace(
     'salary',
     'Salary'
@@ -75,7 +72,6 @@ const createTable = (tableData) => {
         title: labelForTable.last,
         sortable: true,
         sorter: (a, b, c, d) => {
-          console.log(c, d);
           if (a === b) {
             a = c.first;
             b = d.first;
@@ -99,6 +95,13 @@ const createTable = (tableData) => {
         sorter: (a, b) => {
           return new Date(a).getTime() - new Date(b).getTime();
         },
+        formatter: (value) => {
+          return Intl.DateTimeFormat('en-EU', {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+          }).format(value);
+        },
       },
       {
         field: 'salary',
@@ -111,13 +114,14 @@ const createTable = (tableData) => {
           return Intl.NumberFormat('en-us', {
             style: 'currency',
             currency: 'USD',
-          }).format(value);
+          })
+            .format(value)
+            .replace(',', '');
         },
       },
     ],
   });
   //* Render the table data using the data from the database
-  console.log(tableData);
   let data = {
     last: [],
     first: [],
@@ -137,17 +141,8 @@ const createTable = (tableData) => {
   });
   tableData.hire.table.rows.map((row, index) => {
     row.c[0].f = Date.parse(row.c[0].f);
-    data.hire.push(
-      Intl.DateTimeFormat('en-EU', {
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-      })
-        .format(tableData.hire.table.rows[index].c[0].f)
-        .replace(',', '')
-    );
+    data.hire.push(tableData.hire.table.rows[index].c[0].f);
   });
-  console.log(data);
 
   data.last.map((row, index) => {
     table.bootstrapTable('append', {
